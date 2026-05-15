@@ -5,31 +5,33 @@ Project Timeline: May 8th – July 16th
 
 ## Sprints
 
-Sprint 1: Connectivity & Infrastructure (May 8 – May 24)
-
-- Setup GitHub repository and project architecture.
-- Implement UDP Bridge between Android and PC.
-- Establish MAVLink communication (SITL simulation).
-
-Sprint 2: Core Algorithm Integration (May 25 – June 8)
-
-- Adapt Lazy Theta* and B-Spline for real-time reactive loop.
-- Implement dynamic target updating from Android input.
-- Define virtual geofencing and safety fallback logic.
-
-Sprint 3: Dashboard & Visualization (June 9 – June 23)
-
-- Develop Web-based Dashboard (React/Socket.io).
-- Implement real-time telemetry and network latency monitoring.
-- Integrate 3D visualization of the cage and flight path.
-
-Sprint 4: Validation & Field Tests (June 24 – July 8)
-
-- Perform physical flight tests in the cage.
-- Tune PID/Spline parameters for real-world drone dynamics.
-- Finalize data collection for network efficiency demonstration.
-
-Final Polish & Delivery (July 9 – July 16)
+- **Sprint 1: Communication & Mapping (May 8 – May 24)**
+    
+    - Setup the "Known Map" environment in Python (static obstacle definitions).
+    - Implement UDP bridge for iPhone position streaming (local coordinate mapping).
+    - Establish MAVLink/Wi-Fi telemetry link to receive real-time UAV coordinates.
+        
+- **Sprint 2: LoS Logic & Algorithm Integration (May 25 – June 8)**
+    
+    - Develop the **LoS Checker**: Geometric validation between iPhone, UAV, and obstacles.
+    - Integrate the **TOPA Algorithm** to calculate optimal setpoints when LoS is obstructed.
+    - Connect TOPA outputs to the **Lazy Theta*** and **B-Spline** path planner.
+        
+- **Sprint 3: Performance Dashboard & Analytics (June 9 – June 23)**
+    
+    - Build a real-time web dashboard (React/Socket.io).
+    - Visualize the 2D/3D environment, including the "Signal Shadow" zones.
+    - Track KPIs: LoS Availability, Jitter, and Command Latency.
+        
+- **Sprint 4: Validation & Field Trials (June 24 – July 8)**
+    
+    - Conduct physical tests in the cage using the iPhone and physical obstacles.
+    - Stress-test the system with rapid user movement to evaluate reactive delay.
+    - Finalize performance reports on QoS improvement.
+        
+- **Final Delivery (July 9 – July 16)**
+    
+    - Complete the Overleaf Technical Report and prepare the final demo.
 
 - Finish LaTeX documentation (Overleaf).
 
