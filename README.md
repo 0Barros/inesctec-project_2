@@ -36,3 +36,6 @@ Project Timeline: May 8th – July 16th
 - Finish LaTeX documentation (Overleaf).
 
 Presentation rehearsal and final bug fixing.
+
+### TOPA
+This implementation leverages the TOPA Algorithm developed at INESC TEC to ensure optimal aerial network coverage by considering both user traffic and environmental geometry.
