@@ -13,7 +13,8 @@ def meter_to_gps(lat_center, lon_center, limit_x, limit_y):
     return [lat_center + deg_lat, lon_center + deg_lon]
 
 def draw_cage_local(map):
-
+    # Visualization should show the actual physical cage and obstacle sizes.
+    # The TOPA planner applies the 0.65 m UAV safety margin internally, but map display stays uninflated.
     mission = fligh_zone[selected_zone]
     if not mission:
         print(f"'{selected_zone}' not found.")

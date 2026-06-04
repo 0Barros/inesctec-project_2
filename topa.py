@@ -89,7 +89,8 @@ class TOPAPositioner:
         :param cage_limits: dict {"limit_x": float, "limit_y": float, "limit_z": float}
         :return: optimal_uav_pos tuple (x, y, z) in meters
         """
-        # Read environment boundaries and reduce them by the UAV radius so the center stays inside the safe flight cage
+        # Read environment boundaries from the physical cage definition.
+        # Internally, contract the X/Y bounds by the UAV radius so the UAV center remains a safe distance from the walls.
         max_x = cage_limits.get("limit_x", 50.0)
         max_y = cage_limits.get("limit_y", 50.0)
         max_z = max(0.0, cage_limits.get("limit_z", 45.0) - self.uav_radius) # Safety roof for flying space
