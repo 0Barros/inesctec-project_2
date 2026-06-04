@@ -1,0 +1,31 @@
+Iteration 01
+Date: 2026-06-04
+Time: 17:11:11 +01:00
+
+What changed from previous iteration:
+- Added a UAV safety margin of 0.65 meters to the TOPA planning algorithm.
+- Kept map visualization unchanged so the user sees the real cage and obstacle dimensions.
+- Applied the safety margin internally in `topa.py`, using inflated obstacle radii for LoS clearance and contracted cage bounds for the drone center.
+- Restored `convertIntoCage.py` to display the physical cage and obstacle sizes without the safety inflation.
+
+---
+
+Iteration 02
+Date: 2026-06-04
+Time: 17:30:00 +01:00
+
+What changed from previous iteration:
+- Enhanced `topaVisualizer.py` with comprehensive multi-scenario testing:
+  * Added 3 test scenarios per flight zone: Corner Start, Center Start, Opposite Corner
+  * Creates a 3x3 grid (3 zones × 3 scenarios) for simultaneous validation
+  * Edge node (generic device name replacing "iPhone") always positioned outside the cage
+  * Unified legend below the figure showing all element types with clear descriptions
+  * Added planned trajectory path visualization (cyan dashed line)
+  * Improved visual markers: UAV start (blue circle), edge node (red square), TOPA goal (green circle)
+  * Shows optimal altitude (Z) for each scenario
+- Terminology change: Replaced "iPhone" with "edgeNode" for platform-agnostic communication
+- Visual enhancements:
+  * Better color contrast and alpha transparency for clarity
+  * Grid lines for easier coordinate reading
+  * Obstacle labels and cage boundary markers
+  * More detailed subplot titles with scenario descriptions
