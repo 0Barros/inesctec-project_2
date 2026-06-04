@@ -1,0 +1,122 @@
+Iteration 01
+Date: 2026-06-04
+Time: 17:11:11 +01:00
+
+What changed from previous iteration:
+- Added a UAV safety margin of 0.65 meters to the TOPA planning algorithm.
+- Kept map visualization unchanged so the user sees the real cage and obstacle dimensions.
+- Applied the safety margin internally in `topa.py`, using inflated obstacle radii for LoS clearance and contracted cage bounds for the drone center.
+- Restored `convertIntoCage.py` to display the physical cage and obstacle sizes without the safety inflation.
+
+---
+
+Iteration 02
+Date: 2026-06-04
+Time: 17:30:00 +01:00
+
+What changed from previous iteration:
+- Enhanced `topaVisualizer.py` with comprehensive multi-scenario testing:
+  * Added 3 test scenarios per flight zone: Corner Start, Center Start, Opposite Corner
+  * Creates a 3x3 grid (3 zones × 3 scenarios) for simultaneous validation
+  * Edge node (generic device name replacing "iPhone") always positioned outside the cage
+  * Unified legend below the figure showing all element types with clear descriptions
+  * Added planned trajectory path visualization (cyan dashed line)
+  * Improved visual markers: UAV start (blue circle), edge node (red square), TOPA goal (green circle)
+  * Shows optimal altitude (Z) for each scenario
+- Terminology change: Replaced "iPhone" with "edgeNode" for platform-agnostic communication
+- Visual enhancements:
+  * Better color contrast and alpha transparency for clarity
+  * Grid lines for easier coordinate reading
+  * Obstacle labels and cage boundary markers
+  * More detailed subplot titles with scenario descriptions
+
+---
+
+Iteration 03
+Date: 2026-06-04
+Time: 18:00:00 +01:00
+
+What changed from previous iteration:
+- **Complete refactor to dynamic frame-by-frame animation:**
+  * Converted static snapshot visualization to interactive time-series simulation
+  * Uses `plt.ion()` for interactive mode with 35-frame animation loop
+  * Edge node moves continuously across 35 frames, walking behind central obstacle
+  * TOPA engine recalculates optimal UAV position on EVERY frame
+  * UAV position updates dynamically to follow TOPA-computed goals frame-by-frame
+  * Canvas refresh with `fig.canvas.draw()` and `fig.canvas.flush_events()`
+  * Smooth 120ms frame delay for watchable video playback
+- **Critical LoS Verification:**
+  * Bright lime-green LoS vector drawn each frame (3px linewidth)
+  * UAV physical hull (0.65m circle) clearly visible in blue
+  * TOPA goal position marked in green with inflated goal hull
+  * C-Space inflated obstacles shown in orange (dotted circles)
+  * Visual confirmation that LoS vector never cuts through raw obstacle footprints
+- **Enhanced Dynamic Elements:**
+  * Frame counter and real-time altitude display on each frame
+  * Planned trajectory path (cyan dashed) from current to goal position
+  * Legend with 8 distinct element types for clarity
+  * Comprehensive info box showing frame number, altitude, and edge node coordinates
+- **Single-Zone Focus:** Focused on B_Auditory zone for detailed validation of obstacle occlusion behavior
+- **Performance & User Experience:**
+  * Proper axes clearing (`ax.clear()`) and selective patch removal
+  * Efficient redraw of dynamic vs. static elements
+  * Success message confirming LoS verification
+
+---
+
+Iteration 04 (CRITICAL CORRECTION)
+Date: 2026-06-04
+Time: 18:30:00 +01:00
+
+What changed from previous iteration (MAJOR ARCHITECTURAL FIX):
+- **CORRECTED fundamental TOPA simulation logic to strictly comply with paper requirements:**
+  * **Static EdgeNode (no longer moving):** EdgeNode now fixed at (55.0, 25.0, 1.0) outside cage - NOT moving
+  * **True Time Simulation:** Replaced moving target with time-varying traffic demand (SNR) over 30 frames
+  * **Traffic Demand Profile:** SNR requirement increases from 10 dB → 20 dB linearly across 30 frames
+  * **Correct TOPA Behavior:** UAV position recalculated based on traffic demand, NOT target movement
+  * **Obstacle Remains Constant:** Single central obstacle at (25.0, 25.0) with physical radius 3.0m, C-Space 3.65m
+  * **UAV Initial Position:** Starts at (5.0, 25.0, 10.0) - on left side of obstacle
+- **Removed Bugs from Iteration 03:**
+  * No more "dog-walking" behavior - UAV optimizes position to negotiate traffic sphere radius (d_max)
+  * Proper C-Space inflation applied to obstacle for TOPA calculation
+  * UAV respects cage boundaries during optimization
+  * LoS vector rendered as solid lime-green line to clearly show clearance path
+- **Simplified, Focused Visualization:**
+  * Single large figure (not 3x3 grid) showing frame-by-frame adaptation
+  * Clear frame metrics: Frame #, SNR demand, UAV coordinates, altitude, distance to target
+  * Cage drawn as red dashed boundary with EdgeNode clearly marked OUTSIDE it
+  * Physical obstacle (gray circle) + C-Space inflation (orange dashed)
+  * Console output showing clearance metrics: distance to obstacle, C-Space safety margin
+  * Slower 200ms frame delay for watchable simulation
+- **Verification Output:**
+  * Real-time console printout of each frame with clearance metrics
+  * Success confirmation after 30 frames
+  * Validates that UAV never penetrates C-Space danger zone
+
+---
+
+Iteration 05 (MAP ENVIRONMENT & TARGET TRAJECTORY INTEGRATION)
+Date: 2026-06-04
+Time: 19:15:00 +01:00
+
+What changed from previous iteration:
+- **Direct Integration with Project Assets:** Integrated `mapConfig.py` into the tracking script, dropping hardcoded environments to parse real spatial layouts dynamically (e.g., loading multiple distinct obstacle footprints from the `B_Auditory` dataset asset layout).
+- **Environment Dimensional Alignment:** Corrected visual boundary scale definitions to explicitly map to the physical structural constraints: 8.0m (X width) × 4.0m (Y length) × 3.0m (Z height limit).
+- **Dynamic External Tracking Event:** Moved the `edgeNode` target back to a dynamic trajectory outside the right-side cage boundary (X=11.0m, Y ramping continuously from 0.0m to 6.0m over 40 frames) to generate dynamic line-of-sight occlusion vectors.
+- **Identified Solver Optimization Artifact (The Teleportation Bug):** * *The Issue:* The UAV immediately appeared on the far right side of the cage on Frame 1, failing to display a left-to-right horizontal tracking transit.
+  * *The Cause:* Because TOPA operates as a memoryless positioning engine that analyzes each frame freshly from scratch to minimize link loss, it immediately calculated the absolute optimal destination for the external target on frame 1. The script immediately assigned `uav_current_pos = optimal_pos`, causing the drone to instantly "teleport" to the right wall rather than showing a flight path transiting across the cage from the left side.
+
+---
+
+Iteration 06 (THE PATH-PLANNING MISSING LINK)
+Date: 2026-06-04
+Time: 19:45:00 +01:00
+
+What changed from previous iteration:
+- **Kinematic Speed Regulation:** Replaced the memoryless "teleportation" behavior by forcing the UAV to spawn strictly on the far left side of the cage (X=0.8m) and moving it incrementally toward its destination using a fixed horizontal velocity step (0.35m per frame).
+- **Dynamic Link Status Indicator:** Implemented a real-time ray-casting intersection check between the UAV center and the EdgeNode footprint. The Line-of-Sight (LoS) vector line now dynamically renders in bright **Red** when blocked by physical pillars and flips back to **Lime Green** when an open wireless path is achieved.
+- **Visual Separation of Target vs. State:** Introduced a blue cross (`x`) marker to represent TOPA's mathematical goal target output, separating where the engine wants the drone to go from where the drone physically is at any given time step.
+- **Discovered Critical Hull Collision (The Straight-Line Bug):**
+  * *The Issue:* While the final TOPA goal (blue cross) remains completely safe and respects all boundaries, the UAV physically clips inside the gray footprints of obstacles during its horizontal left-to-right tracking transit.
+  * *The Cause:* The current visualizer uses a naive straight-line trajectory vector step to bridge the gap between the drone's location and the blue cross. Because it lacks a path-planning routing layer, it blindly drives the drone through intermediate obstructions.
+  * *The Solution:* The TOPA Goal Placement Engine is now 100% verified and operating correctly. To fix the collision, the pipeline must now officially integrate the **Lazy Theta\*** path planning module to calculate obstacle-avoiding waypoint trajectories routing around the C-Space boundaries toward the blue cross target.

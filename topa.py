@@ -29,7 +29,7 @@ class TOPAPositioner:
         to maintain line-of-sight with the target over cylindrical obstacles.
         """
         uav_x, uav_y = uav_xy
-        tx, ty, tz = target_pos
+        tx, ty, tz = target_pos[:3]  # Handle 4-tuple with SNR demand at index 3
         
         max_required_z = tz # Baseline height is at least the target height
         
