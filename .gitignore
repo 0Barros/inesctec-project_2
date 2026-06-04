@@ -1,0 +1,19 @@
+# Ignorar ficheiros compilados do Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignorar ambientes virtuais (se usares)
+venv/
+.venv/
+env/
+
+# Ignorar ficheiros temporários do sistema ou do VS Code
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Ignorar mapas gerados localmente (opcional)
+# Como o map.html muda a cada segundo com o iPhone, podes ignorá-lo para não poluir o Git
+map.html
