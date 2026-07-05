@@ -1,0 +1,17 @@
+# Give ArduPilot 60 seconds to complete internal EKF calibrations and get 3D GPS Fix
+sleep 60
+
+# Switch flight mode to GUIDED
+mode guided
+
+# Arm the quadcopter motors
+arm throttle
+
+# Takeoff to an altitude of 30 meters
+takeoff 30
+
+# Wait 10 seconds to ensure the drone reaches the takeoff altitude safely
+sleep 10
+
+# Fly autonomously in a straight line to INESC TEC / FEUP coordinates
+guided 41.1780 -8.5980 30
